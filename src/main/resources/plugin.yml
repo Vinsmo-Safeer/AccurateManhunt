@@ -1,0 +1,13 @@
+name: AccurateManhunt
+version: '${version}'
+
+main: com.safeer.accurateManhunt.AccurateManhunt
+api-version: '26.3'
+author: Safeer
+description: A plugin that allows you to configure and play manhunt with your friends.
+load: POSTWORLD
+
+permissions:
+  accurate-manhunt.manhunt.use:
+    default: op
+    description: "Allows to use /manhunt command"
