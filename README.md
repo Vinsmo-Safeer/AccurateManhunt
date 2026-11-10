@@ -27,7 +27,14 @@
 ### Configuration Commands
 
 #### Assigning and removing
-You have to assign players to be either speedrunner or hunter.
+You have to assign players to be either speedrunner or hunter.|
+Suggestion
+￼
+Feature a gallery image
+The featured gallery image is often how your project makes its first impression.
+Visit gallery page
+Review disclosures
+Make sure users are aware of
 At least one player needs to be a speedrunner and another player to be a hunter to start a game.
 
 To assign players:
@@ -78,7 +85,7 @@ You can stop the manhunt with command
 | /manhunt clearInventory         | Clears inventory of all participants            |
 | /manhunt setSurvival        | Sets all participants' gamemode to survival            |
 | /manhunt revokeAdvancement        | Revokes all participants' advancements            |
-| /manhunt getCompass        | Gets the hunter (executor) and compass            |
+| /manhunt getCompass        | Gets the hunter (executor) a compass            |
 
 
 ## Permissions
