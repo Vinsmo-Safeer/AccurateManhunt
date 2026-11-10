@@ -6,17 +6,10 @@ import com.safeer.accurateManhunt.manhunt.commands.QuickStartManhuntCommand;
 import com.safeer.accurateManhunt.manhunt.listeners.*;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class AccurateManhunt extends JavaPlugin {
-
-
-    /*
-    * TODO:
-    *  Save the location of the portal when speedrunner enters to it
-    *  Remind players of the time every half an hour - SET
-    *  permissions
-    */
 
 
 
@@ -30,6 +23,14 @@ public final class AccurateManhunt extends JavaPlugin {
 
         MainManhuntClass manhuntClass = new MainManhuntClass(this);
 
+        registerCommands(manhuntClass);
+
+        registerListeners(manhuntClass);
+
+
+    }
+
+    private void registerCommands(MainManhuntClass manhuntClass) {
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
                     event.registrar().register(
                             ManhuntCommands.manhuntCommand(manhuntClass),
@@ -45,16 +46,19 @@ public final class AccurateManhunt extends JavaPlugin {
                     );
                 }
         );
+    }
 
-        getServer().getPluginManager().registerEvents(new TrackerInteractionListenerLeftClick(manhuntClass), this);
-        getServer().getPluginManager().registerEvents(new TrackerInteractionListenerRightClick(manhuntClass), this);
-        getServer().getPluginManager().registerEvents(new TrackerMenuListener(this, manhuntClass), this);
-        getServer().getPluginManager().registerEvents(new PlayerDamageListener(this, manhuntClass), this);
-        getServer().getPluginManager().registerEvents(new DeathListener(manhuntClass), this);
+    private void registerListeners(MainManhuntClass manhuntClass) {
+        PluginManager pm = getServer().getPluginManager();
 
-
-
-
+        pm.registerEvents(new TrackerInteractionListenerLeftClick(manhuntClass), this);
+        pm.registerEvents(new TrackerInteractionListenerRightClick(manhuntClass), this);
+        pm.registerEvents(new TrackerMenuListener(this, manhuntClass), this);
+        pm.registerEvents(new PlayerDamageListener(this, manhuntClass), this);
+        pm.registerEvents(new DeathListener(manhuntClass), this);
+        pm.registerEvents(new EnderDragonDeathListener(manhuntClass), this);
+        pm.registerEvents(new RespawnListener(manhuntClass), this);
+        pm.registerEvents(new TrackerDropEvent(), this);
     }
 
     @Override

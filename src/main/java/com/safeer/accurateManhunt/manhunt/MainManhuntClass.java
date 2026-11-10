@@ -8,6 +8,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -73,7 +74,6 @@ public class MainManhuntClass {
         }
 
         var speedrunnerLocation = speedrunner.getLocation();
-        speedrunner.setFlySpeed(0);
 
 
         List<Player> hunters = new ArrayList<>();
@@ -148,6 +148,21 @@ public class MainManhuntClass {
 
 
         Bukkit.broadcast(Component.text("Manhunt started!", NamedTextColor.GREEN));
+    }
+
+    public void getCompass(Player hunter) {
+
+        if (hunter == null) return;
+
+
+        Player speedrunner = Bukkit.getPlayer(hunters.get(hunter.getUniqueId()).getUniqueId());
+
+        if (speedrunner == null) {
+            speedrunner = getFirstSpeedrunner();
+            if (speedrunner == null) return;
+        }
+
+        getCompass(speedrunner, hunter, true);
     }
 
     private void getCompassToEveryHunter() {
@@ -291,16 +306,49 @@ public class MainManhuntClass {
         return Command.SINGLE_SUCCESS;
     }
 
+    public void gameOver() {
+
+        Title title = Title.title(
+                Component.text("Speedrunner Won", NamedTextColor.GOLD),
+                Component.text("Hunters Lost the game.", NamedTextColor.RED));
+
+        var players = Bukkit.getOnlinePlayers();
+        for (Player player : players) {
+            player.showTitle(title);
+        }
+
+        long duration = System.currentTimeMillis() - startedAt;
+
+        long hours = duration / 3_600_000;
+        long minutes = (duration / 60_000) % 60;
+        long seconds = (duration / 1_000) % 60;
+
+        String formattedTime = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+
+        Bukkit.broadcast(Component.text("Lasted " + formattedTime
+                , NamedTextColor.YELLOW));
+
+        gameState = GameState.IDLE;
+
+        task.cancel();
+        task = null;
+        speedrunners = null;
+        hunters = null;
+    }
+
     public int stop() {
 
 
         Bukkit.broadcast(Component.text("Manhunt Stopped", NamedTextColor.RED));
-        Bukkit.broadcast(Component.text("Lasted "
-                + (long) ((System.currentTimeMillis() - startedAt) / 60000.0)
-                + " minute(s)"
+
+        long duration = System.currentTimeMillis() - startedAt;
+
+        double minutes = duration / 60_000.0;
+
+        String formattedTime = String.format("%.2f minutes", minutes);
+
+        Bukkit.broadcast(Component.text("Lasted " + formattedTime
         , NamedTextColor.YELLOW));
-
-
 
         gameState = GameState.IDLE;
 
@@ -464,25 +512,6 @@ public class MainManhuntClass {
 
         return Command.SINGLE_SUCCESS;
     }
-
-    private @Nullable Player getSpeedrunner(CommandSourceStack source) {
-        Player speedrunner = getSpeedrunner();
-
-        if (speedrunner == null) {
-            Objects.requireNonNull(source.getExecutor()).sendMessage("Unable to find speedrunner (Might be offline or unassigned).");
-            return null;
-        }
-        return speedrunner;
-    }
-
-    private @Nullable Player getSpeedrunner() {
-        return Bukkit.getPlayer(Objects.requireNonNull(participants.stream()
-                .filter(participant -> participant.team().equals(Team.SPEEDRUNNER))
-                .findFirst()
-                .orElse(null)).uniqueId());
-    }
-
-
 
     public int getCompass(Player speedrunner, Player hunter, boolean forceGetCompass) {
 

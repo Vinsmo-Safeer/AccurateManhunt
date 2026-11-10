@@ -22,6 +22,8 @@ public record DeathListener(MainManhuntClass manhuntClass) implements Listener {
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
 
+
+
         if (!manhuntClass.gameState.equals(GameState.RUNNING)) return;
 
         var player = event.getPlayer();
