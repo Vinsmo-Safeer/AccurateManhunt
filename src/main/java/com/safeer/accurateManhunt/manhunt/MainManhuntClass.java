@@ -233,17 +233,42 @@ public class MainManhuntClass {
 
             if (team.equals(Team.SPEEDRUNNER)) {
                 speedrunners.add(new Speedrunner(participant.uniqueId()));
-                continue;
+            } else if (team.equals(Team.HUNTER)) {
+                hunters.put(participant.uniqueId(), null);
             }
 
-            if (team.equals(Team.HUNTER)) {
-                hunters.put(participant.uniqueId(), null);
+            if (!AccurateManhunt.isProtocolLibEnabled) continue;
+
+            var player = Bukkit.getPlayer(participant.uniqueId());
+            boolean isPlayerNull = false;
+            if (player == null) {
+                Bukkit.broadcast(Component.text(
+                        "Unable to change waypoint attribute of player with id " +
+                                participant.uniqueId() + ". Cannot find player!", NamedTextColor.RED));
+                isPlayerNull = true;
+            }
+
+            if (isPlayerNull) continue;
+
+            if (team.equals(Team.SPEEDRUNNER)) {
+                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_RECEIVE_RANGE))
+                        .setBaseValue(0);
+                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE))
+                        .setBaseValue(0);
+            } else if (team.equals(Team.HUNTER)) {
+                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_RECEIVE_RANGE))
+                        .setBaseValue(60000000);
+                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE))
+                        .setBaseValue(60000000);
             }
 
         }
     }
 
     private void refreshWayPoints() {
+
+        if (!AccurateManhunt.isProtocolLibEnabled) return;
+
 
         for (Participant participant : participants) {
 

@@ -6,17 +6,35 @@ import com.safeer.accurateManhunt.manhunt.commands.QuickStartManhuntCommand;
 import com.safeer.accurateManhunt.manhunt.listeners.*;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class AccurateManhunt extends JavaPlugin {
 
+    public static boolean isProtocolLibEnabled = false;
 
 
     public static NamespacedKey TRACKER_KEY;
 
     @Override
     public void onEnable() {
+
+        Plugin protocolLib = getServer()
+                .getPluginManager()
+                .getPlugin("ProtocolLib");
+
+        if (protocolLib != null && protocolLib.isEnabled()) {
+            getLogger().info("ProtocolLib detected! Enabling packet manipulation.");
+            isProtocolLibEnabled = true;
+
+        } else {
+            getLogger().warning("ProtocolLib was not found!");
+            getLogger().warning("Install ProtocolLib to enable team-specific locator bars.");
+            getLogger().warning("Download: https://www.spigotmc.org/resources/protocollib.1997/");
+            getLogger().warning("Using legacy locator bar implementation instead.");
+        }
+
 
         TRACKER_KEY = new NamespacedKey(this, "tracker_compass");
 
@@ -59,7 +77,7 @@ public final class AccurateManhunt extends JavaPlugin {
         pm.registerEvents(new EnderDragonDeathListener(manhuntClass), this);
         pm.registerEvents(new RespawnListener(manhuntClass), this);
         pm.registerEvents(new TrackerDropEvent(), this);
-        pm.registerEvents(new LocationBarListener(this, manhuntClass), this);
+        if (isProtocolLibEnabled) pm.registerEvents(new LocationBarListener(this, manhuntClass), this);
     }
 
     @Override

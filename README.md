@@ -5,9 +5,6 @@
 - Multiple speedrunners
 - Select between speedrunners to track in the Tracker Menu
 
-
-## Required Dependency: [ProtocolLib] (https://github.com/dmulloy2/ProtocolLib/releases/tag/5.4.0)
-
 ## Commands
 ### Quick Commands
 
@@ -95,3 +92,11 @@ You can stop the manhunt with command
 | ---------- | ---------- | -------- |
 | accurate-manhunt.manhunt.use           | Allows to use manhunt commands            | op        |
 
+## Optional Dependencies
+
+### [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/)
+This is an option dependency. Installing this enables advanced team based Locator Bar functionality.
+- **Without ProtcolLib:** Uses default locator bar implementation. Speedrunners cannot see hunters' waypoints. But speedrunners also cannot see other speedrunners' waypoints either.
+- **With ProtocolLib:** Enables team-based waypoint system. Players can see waypoints of  other players in their team. But cannot see opponents' waypoints.
+
+**Highly Recommended if playing with more than 1 speedrunner**
