@@ -59,6 +59,7 @@ public final class AccurateManhunt extends JavaPlugin {
         pm.registerEvents(new EnderDragonDeathListener(manhuntClass), this);
         pm.registerEvents(new RespawnListener(manhuntClass), this);
         pm.registerEvents(new TrackerDropEvent(), this);
+        pm.registerEvents(new LocationBarListener(this, manhuntClass), this);
     }
 
     @Override

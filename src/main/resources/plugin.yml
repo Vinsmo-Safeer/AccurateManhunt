@@ -7,6 +7,8 @@ author: Safeer
 description: A plugin that allows you to configure and play manhunt with your friends.
 load: POSTWORLD
 
+depend: [ProtocolLib]
+
 permissions:
   accurate-manhunt.manhunt.use:
     default: op

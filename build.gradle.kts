@@ -1,15 +1,19 @@
 plugins {
     id("java-library")
     id("xyz.jpenilla.run-paper") version "3.1.0"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.24"
 }
 
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://repo.dmulloy2.net/repository/public/")
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.3.build.+")
+    paperweight.paperDevBundle("26.3.build.+")
+
+    compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
 }
 
 java {

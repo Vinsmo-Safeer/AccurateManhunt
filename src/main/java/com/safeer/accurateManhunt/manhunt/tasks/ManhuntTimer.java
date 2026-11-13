@@ -105,9 +105,6 @@ public final class ManhuntTimer extends BukkitRunnable {
         };
         var hunterLocation = hunter.getLocation();
 
-        Bukkit.getLogger().info("Hunter " + hunter.getName() + " world=" + hunterLocation.getWorld().getName()
-                + " runner world=" + ref.speedrunnerLocation.getWorld().getName());
-
         manhuntClass.updateSpeedrunnerLocation(speedrunner);
 
         if (!ref.speedrunnerLocation.getWorld().getName().equals(hunterLocation.getWorld().getName())) {
@@ -137,11 +134,6 @@ public final class ManhuntTimer extends BukkitRunnable {
             meta.setLodestone(ref.speedrunnerLocation);
             meta.setLodestoneTracked(false);
             item.setItemMeta(meta);
-
-            Bukkit.getLogger().info("Compass target: " + ref.speedrunnerLocation.getWorld().getKey()
-                    + " " + ref.speedrunnerLocation.getBlockX() + "," + ref.speedrunnerLocation.getBlockZ()
-                    + " | hunter dimension: " + hunter.getWorld().getKey()
-                    + " | hunter holds slot " + i);
 
             return;
         }

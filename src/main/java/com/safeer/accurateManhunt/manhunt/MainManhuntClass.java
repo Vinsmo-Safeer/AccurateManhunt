@@ -1,5 +1,7 @@
 package com.safeer.accurateManhunt.manhunt;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import com.mojang.brigadier.Command;
 import com.safeer.accurateManhunt.AccurateManhunt;
 import com.safeer.accurateManhunt.manhunt.tasks.CountdownTask;
@@ -9,6 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
+import net.minecraft.network.protocol.game.ClientboundTrackedWaypointPacket;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -142,6 +145,7 @@ public class MainManhuntClass {
 
         gameState = GameState.RUNNING;
 
+        refreshWayPoints();
 
         startedAt = System.currentTimeMillis();
         task = new ManhuntTimer(this, startedAt, hunters).runTaskTimer(plugin, 0L, 60L);
@@ -227,42 +231,55 @@ public class MainManhuntClass {
 
             Team team = participant.team();
 
-            var player = Bukkit.getPlayer(participant.uniqueId());
-            boolean isPlayerNull = false;
-            if (player == null) {
-                Bukkit.broadcast(Component.text(
-                        "Unable to change waypoint attribute of player with id " +
-                                participant.uniqueId() + ". Cannot find player!", NamedTextColor.RED));
-                isPlayerNull = true;
-            }
-
-
             if (team.equals(Team.SPEEDRUNNER)) {
                 speedrunners.add(new Speedrunner(participant.uniqueId()));
-
-                if (isPlayerNull) continue;
-
-                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_RECEIVE_RANGE))
-                        .setBaseValue(0);
-                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE))
-                        .setBaseValue(0);
-
-
                 continue;
             }
 
             if (team.equals(Team.HUNTER)) {
                 hunters.put(participant.uniqueId(), null);
-
-                if (isPlayerNull) continue;
-
-                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_RECEIVE_RANGE))
-                        .setBaseValue(60000000);
-                Objects.requireNonNull(player.getAttribute(Attribute.WAYPOINT_TRANSMIT_RANGE))
-                        .setBaseValue(60000000);
             }
 
+        }
+    }
 
+    private void refreshWayPoints() {
+
+        for (Participant participant : participants) {
+
+            Player viewer = Bukkit.getPlayer(participant.uniqueId());
+            if (viewer == null) continue;
+
+            Team viewerTeam = participant.team();
+
+            if (viewerTeam == null) viewerTeam = getTeam(viewer.getUniqueId());
+            if (viewerTeam == null) return;
+
+            List<Player> targets = new ArrayList<>();
+
+            if (viewerTeam == Team.SPEEDRUNNER) {
+                for (UUID uuid : hunters.keySet()) {
+                    Player target = Bukkit.getPlayer(uuid);
+                    if (target != null) targets.add(target);
+                }
+            } else if (viewerTeam == Team.HUNTER) {
+                for (Speedrunner speedrunner : speedrunners) {
+                    Player target = Bukkit.getPlayer(speedrunner.getUniqueId());
+                    if (target != null) targets.add(target);
+                }
+            }
+
+            for (Player target : targets) {
+                Team targetTeam = getTeam(target.getUniqueId());
+                boolean isWaypointVisible = targetTeam != null && targetTeam == viewerTeam;
+                if (isWaypointVisible) continue;
+
+                ClientboundTrackedWaypointPacket remove =
+                        ClientboundTrackedWaypointPacket.removeWaypoint(target.getUniqueId());
+
+                ProtocolLibrary.getProtocolManager()
+                        .sendServerPacket(viewer, PacketContainer.fromPacket(remove), false);
+            }
         }
     }
 
@@ -651,6 +668,19 @@ public class MainManhuntClass {
             stop();
         }
     }
+
+
+    public Team getTeam(UUID uuid) {
+
+        for (Participant participant : participants) {
+            if (participant.uniqueId().equals(uuid)) {
+                return participant.team();
+            }
+        }
+
+        return null;
+    }
+
 
     public int healAllPlayers() {
 
