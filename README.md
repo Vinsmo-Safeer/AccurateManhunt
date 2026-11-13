@@ -6,7 +6,7 @@
 - Select between speedrunners to track in the Tracker Menu
 
 
-## Required Dependency: [ProtocolLib] (https://github.com/dmulloy2/ProtocolLib/releases/tag/5.4.0)
+## Required Dependency: [ProtocolLib](https://github.com/dmulloy2/ProtocolLib/releases/tag/5.4.0)
 
 ## Commands
 ### Quick Commands
