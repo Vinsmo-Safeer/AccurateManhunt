@@ -4,6 +4,7 @@
 - Quick start command
 - Multiple speedrunners
 - Select between speedrunners to track in the Tracker Menu
+- Advanced Team based Waypoint System.
 
 ## Commands
 ### Quick Commands
@@ -26,14 +27,7 @@
 ### Configuration Commands
 
 #### Assigning and removing
-You have to assign players to be either speedrunner or hunter.|
-Suggestion
-￼
-Feature a gallery image
-The featured gallery image is often how your project makes its first impression.
-Visit gallery page
-Review disclosures
-Make sure users are aware of
+You have to assign players to be either speedrunner or hunter.
 At least one player needs to be a speedrunner and another player to be a hunter to start a game.
 
 To assign players:
